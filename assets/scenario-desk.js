@@ -516,28 +516,54 @@
   });
 
   // ── PDF export ──────────────────────────────────────────────
-  downloadBtn.addEventListener('click', () => {
+  let logoDataUrl = null;
+  async function loadLogo() {
+    if (logoDataUrl) return logoDataUrl;
+    try {
+      const res = await fetch('/assets/element-commercial-logo.png');
+      const blob = await res.blob();
+      logoDataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch {
+      logoDataUrl = null; // PDF still generates fine without the logo
+    }
+    return logoDataUrl;
+  }
+
+  downloadBtn.addEventListener('click', async () => {
     if (!lastResult) return;
-    generatePdf(lastInputs, lastResult, lastChecklist);
+    downloadBtn.disabled = true;
+    try {
+      await generatePdf(lastInputs, lastResult, lastChecklist);
+    } finally {
+      downloadBtn.disabled = false;
+    }
   });
 
-  function generatePdf(inputs, result, checklist) {
+  async function generatePdf(inputs, result, checklist) {
     const { jsPDF } = window.jspdf || {};
     if (!jsPDF) {
       alert('PDF library failed to load — check your connection and try again.');
       return;
     }
+    const logo = await loadLogo();
     const doc = new jsPDF({ unit: 'pt', format: 'letter' });
     const pageWidth = doc.internal.pageSize.getWidth();
     const margin = 48;
     let y = 56;
 
-    const INK = [14, 14, 16];
-    const ACCENT = [27, 63, 224];
-    const MID = [107, 107, 110];
-    // Status tones derived from the two brand colors (accent blue + signal orange-red),
-    // matching --status-* custom properties in assets/styles.css.
-    const STATUS = { good: ACCENT, caution: [201, 122, 27], bad: [230, 74, 25], badDeep: [140, 46, 18] };
+    const INK = [20, 18, 14];
+    const GOLD = [188, 157, 98];
+    const GOLD_DEEP = [140, 112, 62];
+    const MID = [107, 100, 90];
+    const CREAM = [250, 247, 240];
+    // Status tones for flags/determination — kept semantic (not gold) so
+    // risk signal stays legible; gold is reserved for brand/chrome elements.
+    const STATUS = { good: [46, 107, 74], caution: [201, 122, 27], bad: [176, 53, 33], badDeep: [122, 36, 22] };
     const SEV_COLOR = { green: STATUS.good, yellow: STATUS.caution, red: STATUS.bad, info: MID };
 
     const checkBreak = (needed) => {
@@ -547,28 +573,43 @@
       }
     };
 
-    // Header
-    doc.setFont('helvetica', 'bold');
+    // Header — logo + letterhead-style rule
+    const logoSize = 44;
+    if (logo) {
+      try { doc.addImage(logo, 'PNG', margin, y - 30, logoSize, logoSize); } catch { /* skip logo if malformed */ }
+    }
+    const headerTextX = logo ? margin + logoSize + 14 : margin;
+    doc.setFont('times', 'bold');
+    doc.setFontSize(13);
+    doc.setTextColor(...INK);
+    doc.text('ELEMENT COMMERCIAL', headerTextX, y - 12);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...GOLD_DEEP);
+    doc.text('SCENARIO DESK', headerTextX, y);
+    doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
     doc.setTextColor(...MID);
-    doc.text('ELEMENT COMMERCIAL · SCENARIO DESK', margin, y);
-    doc.text(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), pageWidth - margin, y, { align: 'right' });
-    y += 28;
+    doc.text(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), pageWidth - margin, y - 12, { align: 'right' });
+    y += 22;
+    doc.setDrawColor(...GOLD);
+    doc.setLineWidth(1.25);
+    doc.line(margin, y, pageWidth - margin, y);
+    doc.setDrawColor(...MID);
+    doc.setLineWidth(0.4);
+    doc.line(margin, y + 2.5, pageWidth - margin, y + 2.5);
+    y += 34;
 
-    doc.setFont('helvetica', 'bold');
+    doc.setFont('times', 'bold');
     doc.setFontSize(22);
     doc.setTextColor(...INK);
     doc.text('Scenario Summary & Preliminary Conditions', margin, y);
-    y += 20;
+    y += 18;
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
+    doc.setFontSize(9.5);
     doc.setTextColor(...MID);
     doc.text('Equal Housing Lender', margin, y);
-    y += 24;
-    doc.setDrawColor(...MID);
-    doc.setLineWidth(0.5);
-    doc.line(margin, y, pageWidth - margin, y);
-    y += 28;
+    y += 30;
 
     // Determination banner
     const det = result.determination;
@@ -587,10 +628,13 @@
 
     // Scenario snapshot
     doc.setTextColor(...INK);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
+    doc.setFont('times', 'bold');
+    doc.setFontSize(13);
     doc.text('Scenario Snapshot', margin, y);
-    y += 16;
+    doc.setDrawColor(...GOLD);
+    doc.setLineWidth(0.75);
+    doc.line(margin, y + 5, margin + 34, y + 5);
+    y += 20;
 
     const snapshotRows = [
       ['Property Type', result.metrics.propRule.label],
@@ -614,7 +658,7 @@
     snapshotRows.forEach(([label, value], i) => {
       checkBreak(18);
       if (i % 2 === 0) {
-        doc.setFillColor(246, 245, 240);
+        doc.setFillColor(...CREAM);
         doc.rect(margin, y - 10, pageWidth - margin * 2, 16, 'F');
       }
       doc.setTextColor(...MID);
@@ -627,11 +671,14 @@
 
     // Flags
     checkBreak(30);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
+    doc.setFont('times', 'bold');
+    doc.setFontSize(13);
     doc.setTextColor(...INK);
     doc.text('Flags & Considerations', margin, y);
-    y += 16;
+    doc.setDrawColor(...GOLD);
+    doc.setLineWidth(0.75);
+    doc.line(margin, y + 5, margin + 34, y + 5);
+    y += 20;
     doc.setFontSize(9.5);
     result.flags.forEach(f => {
       const detailLines = doc.splitTextToSize(f.detail, pageWidth - margin * 2 - 18);
@@ -652,40 +699,41 @@
     // Narrative
     if (result.narrative) {
       checkBreak(50);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(12);
+      doc.setFont('times', 'bold');
+      doc.setFontSize(13);
       doc.setTextColor(...INK);
       doc.text("Our Take", margin, y);
-      y += 16;
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9.5);
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.75);
+      doc.line(margin, y + 5, margin + 34, y + 5);
+      y += 20;
+      doc.setFont('times', 'italic');
+      doc.setFontSize(10.5);
       doc.setTextColor(...INK);
       const narrLines = doc.splitTextToSize(result.narrative, pageWidth - margin * 2);
-      checkBreak(narrLines.length * 12);
+      checkBreak(narrLines.length * 13);
       doc.text(narrLines, margin, y);
-      y += narrLines.length * 12 + 20;
+      y += narrLines.length * 13 + 22;
     }
 
     // Checklist
     checkBreak(30);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
+    doc.setFont('times', 'bold');
+    doc.setFontSize(13);
     doc.setTextColor(...INK);
     doc.text('Documents We\'ll Need From You', margin, y);
-    y += 6;
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8.5);
-    doc.setTextColor(...MID);
-    checkBreak(14);
-    y += 12;
+    doc.setDrawColor(...GOLD);
+    doc.setLineWidth(0.75);
+    doc.line(margin, y + 5, margin + 34, y + 5);
+    y += 24;
 
     const order = ['Borrower Financials', 'Entity & Identification', 'Property Documents', 'Deal-Specific', 'Additional Items Based on Your Scenario'];
     order.filter(g => checklist[g] && checklist[g].length).forEach(group => {
       checkBreak(18);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10.5);
-      doc.setTextColor(...ACCENT);
-      doc.text(group, margin, y);
+      doc.setFontSize(10);
+      doc.setTextColor(...GOLD_DEEP);
+      doc.text(group.toUpperCase(), margin, y);
       y += 14;
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(9.5);
@@ -693,7 +741,7 @@
       checklist[group].forEach(item => {
         const lines = doc.splitTextToSize(item, pageWidth - margin * 2 - 22);
         checkBreak(lines.length * 12 + 4);
-        doc.setDrawColor(...MID);
+        doc.setDrawColor(...GOLD_DEEP);
         doc.setLineWidth(0.75);
         doc.rect(margin + 6, y - 8, 8, 8, 'S');
         doc.text(lines, margin + 22, y);
@@ -705,8 +753,8 @@
     // Disclaimer footer on last page
     checkBreak(70);
     y += 10;
-    doc.setDrawColor(...MID);
-    doc.setLineWidth(0.5);
+    doc.setDrawColor(...GOLD);
+    doc.setLineWidth(0.75);
     doc.line(margin, y, pageWidth - margin, y);
     y += 16;
     doc.setFont('helvetica', 'normal');
