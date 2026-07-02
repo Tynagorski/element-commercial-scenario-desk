@@ -213,7 +213,7 @@
     } else if (score <= 8) {
       determination = { level: 'structuring', label: 'Needs Structuring Before Submission', sub: 'Several items below will meaningfully affect terms or lender fit. Let\'s talk through structure before this goes to a lender.' };
     } else {
-      determination = { level: 'nonstarter', label: 'Not Fundable As Presented', sub: 'As entered, this scenario has multiple hard obstacles for conventional commercial financing. Call Tyler directly — there may still be a non-conventional path.' };
+      determination = { level: 'nonstarter', label: 'Not Fundable As Presented', sub: 'As entered, this scenario has multiple hard obstacles for conventional commercial financing. Call your loan officer directly — there may still be a non-conventional path.' };
     }
 
     const metrics = {
