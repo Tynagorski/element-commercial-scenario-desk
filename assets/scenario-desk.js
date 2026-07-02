@@ -473,6 +473,7 @@
       occupancy: num('sd-occupancy'),
       rate: num('sd-rate'),
       amort: parseInt(val('sd-amort'), 10),
+      brokerFeePct: num('sd-brokerfee'),
       experience: parseInt(val('sd-exp'), 10),
       credit: parseInt(val('sd-credit'), 10),
       liquidity: num('sd-liquidity'),
@@ -562,9 +563,7 @@
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     doc.setTextColor(...MID);
-    doc.text('Tyler Nagorski · Senior Mortgage Consultant · Element Commercial', margin, y);
-    y += 14;
-    doc.text('NMLS #2346195 (Tyler) · NMLS #1850 (APMCORP) · Equal Housing Lender · (440) 749-7218 · tyler@elementmortgage.com', margin, y);
+    doc.text('Equal Housing Lender', margin, y);
     y += 24;
     doc.setDrawColor(...MID);
     doc.setLineWidth(0.5);
@@ -606,6 +605,10 @@
       ['6-Month Reserve Requirement', fmtMoney(result.metrics.reserveRequirement)],
       ['Reported Liquidity', inputs.liquidity !== null ? fmtMoney(inputs.liquidity) : 'Not provided']
     ];
+    if (inputs.brokerFeePct !== null) {
+      const brokerFeeAmount = inputs.loanAmount * (inputs.brokerFeePct / 100);
+      snapshotRows.push(['Broker Fee', `${fmtMoney(brokerFeeAmount)} (${inputs.brokerFeePct.toFixed(2)}% of loan amount)`]);
+    }
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9.5);
     snapshotRows.forEach(([label, value], i) => {
@@ -633,9 +636,11 @@
     result.flags.forEach(f => {
       const detailLines = doc.splitTextToSize(f.detail, pageWidth - margin * 2 - 18);
       checkBreak(14 + detailLines.length * 12 + 6);
+      doc.setFillColor(...(SEV_COLOR[f.severity] || MID));
+      doc.circle(margin + 3.5, y - 3, 3.5, 'F');
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(...(SEV_COLOR[f.severity] || MID));
-      doc.text(`${SEVERITY_ICON[f.severity]}  ${f.title}`, margin, y);
+      doc.text(f.title, margin + 14, y);
       y += 13;
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(...MID);
@@ -686,9 +691,12 @@
       doc.setFontSize(9.5);
       doc.setTextColor(...INK);
       checklist[group].forEach(item => {
-        const lines = doc.splitTextToSize('☐ ' + item, pageWidth - margin * 2 - 10);
+        const lines = doc.splitTextToSize(item, pageWidth - margin * 2 - 22);
         checkBreak(lines.length * 12 + 4);
-        doc.text(lines, margin + 6, y);
+        doc.setDrawColor(...MID);
+        doc.setLineWidth(0.75);
+        doc.rect(margin + 6, y - 8, 8, 8, 'S');
+        doc.text(lines, margin + 22, y);
         y += lines.length * 12 + 4;
       });
       y += 8;
@@ -704,7 +712,7 @@
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7.5);
     doc.setTextColor(...MID);
-    const disclaimer = 'This document is a preliminary, automated summary based solely on information self-reported by the borrower and has not been independently verified. It is not a pre-qualification, pre-approval, term sheet, commitment to lend, or offer of credit, and does not constitute underwriting. Actual terms and conditions depend on full underwriting, appraisal, third-party reports and applicable lender guidelines, and are subject to change. Element Commercial, a brand of Element Mortgage, a division of American Pacific Mortgage Corp. NMLS #1850. Tyler Nagorski, NMLS #2346195. Licensed in SC, NC, GA & FL. Equal Housing Lender.';
+    const disclaimer = 'This document is a preliminary, automated summary based solely on information self-reported by the borrower and has not been independently verified. It is not a pre-qualification, pre-approval, term sheet, commitment to lend, or offer of credit, and does not constitute underwriting. Actual terms and conditions depend on full underwriting, appraisal, third-party reports and applicable lender guidelines, and are subject to change. Equal Housing Lender.';
     doc.text(doc.splitTextToSize(disclaimer, pageWidth - margin * 2), margin, y);
 
     const fileSafeType = (result.metrics.propRule.label || 'Deal').replace(/[^\w]+/g, '-');
