@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scenario Desk | Element Commercial</title>
+<meta name="robots" content="noindex, nofollow, noarchive">
+
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,800,900&f[]=switzer@400,500,600,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/styles.css?v=1">
+<style>
+  /* Scenario Desk — same design tokens as the main site, own single-purpose shell (no multi-page nav) */
+  .sd-nav-inner {
+    max-width: var(--max-w);
+    margin-inline: auto;
+    padding-inline: var(--gutter-d);
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .sd-nav-label {
+    font-family: var(--ff-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+  .sd-footer {
+    background: var(--ink);
+    color: rgba(244,242,236,0.5);
+    border-top: var(--rule);
+  }
+  .sd-footer-inner {
+    max-width: var(--max-w);
+    margin-inline: auto;
+    padding: 28px var(--gutter-d);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-family: var(--ff-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .sd-footer a { color: rgba(244,242,236,0.75); }
+  .sd-footer a:hover { color: var(--paper); }
+  @media (max-width: 768px) {
+    .sd-nav-inner { padding-inline: var(--gutter-m); }
+    .sd-nav-label { display: none; }
+  }
+
+  /* Hero polish — decorative accent + reused stat strip */
+  .page-hero { position: relative; overflow: hidden; }
+  .page-hero::before {
+    content: '';
+    position: absolute;
+    top: -220px; right: -160px;
+    width: 560px; height: 560px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(27,63,224,0.35), rgba(27,63,224,0) 70%);
+    pointer-events: none;
+  }
+  .page-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgba(244,242,236,0.05) 1px, transparent 1px);
+    background-size: 100% 48px;
+    pointer-events: none;
+    mask-image: linear-gradient(to bottom, black, transparent);
+  }
+  .page-hero-inner { position: relative; z-index: 1; }
+  .sd-hero-stats { margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<!-- ══════ NAV (single-purpose — standalone tool, no site nav) ══════ -->
+<header class="nav">
+  <div class="sd-nav-inner">
+    <a href="https://elementcommercial.com" class="wordmark" aria-label="Element Commercial home">
+      Element Commercial<span class="wordmark-dot" aria-hidden="true"></span>
+    </a>
+    <span class="sd-nav-label">Commercial Scenario Desk</span>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ══════ PAGE HERO ══════ -->
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <div class="hero-v2-eyebrow">
+        <span class="mono-tag" style="color:rgba(244,242,236,0.5)">Commercial / Scenario Desk</span>
+        <span class="mono-tag" style="color:rgba(244,242,236,0.5)">Preliminary Screening Tool</span>
+      </div>
+      <h1>Commercial Scenario Desk</h1>
+      <p>Run any commercial deal — multifamily to special purpose, purchase to SBA to construction — through the same set of checks. Get an instant read on leverage, coverage and borrower strength, plus a branded document checklist PDF to send the client to get their file moving.</p>
+      <div class="page-hero-ctas">
+        <a href="#scenario-form" class="btn-primary">Start a Scenario →</a>
+      </div>
+      <div class="hero-v2-stats sd-hero-stats">
+        <div><span class="stat-num">12</span><span class="stat-label">Property Types</span></div>
+        <div><span class="stat-num">7</span><span class="stat-label">Loan Purposes</span></div>
+        <div><span class="stat-num">&lt;1min</span><span class="stat-label">To First Read</span></div>
+        <div><span class="stat-num">PDF</span><span class="stat-label">Client-Ready Output</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ SCENARIO FORM ══════ -->
+  <section class="faq" id="scenario-form" aria-labelledby="scenario-form-heading">
+    <div class="section-inner">
+      <div class="section-header">
+        <span class="mono-tag">Step 1</span>
+        <h2 id="scenario-form-heading">Deal Inputs</h2>
+        <p class="section-sub">Ballpark numbers are fine at this stage. Nothing on this page is submitted anywhere except back to you.</p>
+      </div>
+
+      <div class="contact-form-wrap" style="max-width:900px;">
+        <form id="scenario-form-el" novalidate>
+
+          <div class="form-fieldset-label" data-step="1">Deal Basics</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="sd-type">Property Type *</label>
+              <select id="sd-type" name="property_type" required>
+                <option value="">Select type…</option>
+                <option value="multifamily">Multifamily (5+ units)</option>
+                <option value="mixeduse">Mixed-Use</option>
+                <option value="retail">Retail / Strip Center</option>
+                <option value="nnn">NNN / Net Lease</option>
+                <option value="office">Office</option>
+                <option value="industrial">Industrial / Warehouse</option>
+                <option value="selfstorage">Self-Storage</option>
+                <option value="hotel">Hotel / Hospitality</option>
+                <option value="medical">Medical Office</option>
+                <option value="mhp">Mobile Home Park</option>
+                <option value="special">Special Purpose (gas, car wash, auto, etc.)</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="sd-purpose">Loan Purpose *</label>
+              <select id="sd-purpose" name="loan_purpose" required>
+                <option value="">Select…</option>
+                <option value="purchase">Purchase</option>
+                <option value="ratetermrefi">Rate &amp; Term Refinance</option>
+                <option value="cashoutrefi">Cash-Out Refinance</option>
+                <option value="construction">Construction</option>
+                <option value="bridge">Bridge / Short-Term</option>
+                <option value="sba7a">SBA 7(a)</option>
+                <option value="sba504">SBA 504</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="sd-price">Purchase Price / Current Value ($) *</label>
+              <input type="number" id="sd-price" name="price" required min="0" step="1000" placeholder="2500000">
+              <span class="form-hint">For construction, use total project cost (land + hard + soft costs).</span>
+            </div>
+            <div class="form-group">
+              <label for="sd-loan">Loan Amount Requested ($) *</label>
+              <input type="number" id="sd-loan" name="loan_amount" required min="0" step="1000" placeholder="1875000">
+            </div>
+            <div class="form-group">
+              <label for="sd-noi">Annual Net Operating Income ($)</label>
+              <input type="number" id="sd-noi" name="noi" min="0" step="1000" placeholder="185000">
+              <span class="form-hint">Leave blank for ground-up construction or vacant purchase.</span>
+            </div>
+            <div class="form-group">
+              <label for="sd-occupancy">Current Physical Occupancy (%)</label>
+              <input type="number" id="sd-occupancy" name="occupancy" min="0" max="100" step="1" placeholder="92">
+            </div>
+            <div class="form-group">
+              <label for="sd-rate">Est. Interest Rate (%)</label>
+              <input type="number" id="sd-rate" name="rate" min="0" max="20" step="0.05" placeholder="7.50">
+              <span class="form-hint">Leave blank to use a market-rate estimate of 7.50%.</span>
+            </div>
+            <div class="form-group">
+              <label for="sd-amort">Amortization (years)</label>
+              <select id="sd-amort" name="amort">
+                <option value="25">25 years</option>
+                <option value="20">20 years</option>
+                <option value="30" selected>30 years</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-fieldset-label" data-step="2">Borrower Profile</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="sd-exp">Commercial RE Experience</label>
+              <select id="sd-exp" name="experience">
+                <option value="0">First commercial deal</option>
+                <option value="2">1–3 years</option>
+                <option value="4">3–5 years</option>
+                <option value="7">5–10 years</option>
+                <option value="10">10+ years</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="sd-credit">Estimated Credit Score</label>
+              <select id="sd-credit" name="credit">
+                <option value="740">740+</option>
+                <option value="700">700–739</option>
+                <option value="660">660–699</option>
+                <option value="620">620–659</option>
+                <option value="580">Under 620</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="sd-liquidity">Liquid Assets / Reserves Available ($)</label>
+              <input type="number" id="sd-liquidity" name="liquidity" min="0" step="1000" placeholder="400000">
+            </div>
+            <div class="form-group">
+              <label for="sd-entity">Borrowing Entity</label>
+              <select id="sd-entity" name="entity">
+                <option value="llc">LLC</option>
+                <option value="corp">S-Corp / C-Corp</option>
+                <option value="individual">Individual / Sole Prop</option>
+                <option value="partnership">Partnership</option>
+                <option value="trust">Trust</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label for="sd-bk">Bankruptcy, foreclosure or short sale in the last 7 years?</label>
+              <select id="sd-bk" name="bk_history">
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label for="sd-notes">Anything else worth noting?</label>
+              <textarea id="sd-notes" name="notes" placeholder="Business plan, tenant mix, renovation scope, timeline — anything that helps read the deal."></textarea>
+            </div>
+          </div>
+
+          <div class="form-submit">
+            <button type="submit" class="btn-primary" style="width:100%">Run Scenario →</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ RESULTS ══════ -->
+  <section class="scenario-results" id="scenario-results" hidden aria-labelledby="scenario-results-heading">
+    <div class="section-inner">
+      <div class="section-header">
+        <span class="mono-tag">Step 2</span>
+        <h2 id="scenario-results-heading">Preliminary Feedback</h2>
+        <p class="section-sub">Automated read on the inputs above. This is directional, not a term sheet — use judgment before anything goes to a lender.</p>
+      </div>
+
+      <div class="determination-banner" id="determination-banner">
+        <span class="determination-icon" id="determination-icon" aria-hidden="true"></span>
+        <div class="determination-body">
+          <span class="determination-label" id="determination-label">—</span>
+          <p class="determination-sub" id="determination-sub"></p>
+        </div>
+      </div>
+
+      <div class="metrics-grid" id="metrics-grid"></div>
+
+      <div class="flags-panel">
+        <h3>Flags &amp; Considerations</h3>
+        <ul class="flags-list" id="flags-list"></ul>
+      </div>
+
+      <div class="narrative-panel" id="narrative-panel">
+        <h3>Our Take</h3>
+        <p id="narrative-text" class="narrative-text">Generating a written assessment…</p>
+      </div>
+
+      <div class="checklist-panel" id="checklist-panel">
+        <h3>Step 3 — Documents Needed From the Client</h3>
+        <p class="section-sub">Based on the scenario above, here's the document checklist to send. Getting these up front is the single biggest thing that speeds up a close.</p>
+        <div class="checklist-progress" id="checklist-progress">
+          <div class="checklist-progress-bar"><div class="checklist-progress-fill" id="checklist-progress-fill"></div></div>
+          <span class="checklist-progress-label" id="checklist-progress-label">0 of 0 collected</span>
+        </div>
+        <div class="checklist-groups" id="checklist-groups"></div>
+      </div>
+
+      <div class="results-actions">
+        <button type="button" class="btn-primary" id="download-pdf-btn">Download PDF Summary →</button>
+        <button type="button" class="btn-ghost" id="reset-scenario-btn">Start a New Scenario</button>
+      </div>
+      <p class="scenario-disclaimer">This tool provides a preliminary, automated read based solely on the information entered. It is not a pre-qualification, pre-approval, commitment to lend, or offer of credit, and does not constitute underwriting. Actual terms depend on full underwriting, appraisal, third-party reports and lender guidelines. If sharing the generated PDF with a client, review it first. Element Commercial, a brand of Element Mortgage, a division of American Pacific Mortgage Corp. NMLS #1850. Tyler Nagorski NMLS #2346195. Equal Housing Lender.</p>
+    </div>
+  </section>
+
+</main>
+
+<!-- ══════ FOOTER ══════ -->
+<footer class="sd-footer">
+  <div class="sd-footer-inner">
+    <span>© <span data-year>2026</span> Element Commercial · Tyler Nagorski · NMLS #2346195</span>
+    <a href="https://elementcommercial.com">elementcommercial.com →</a>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="/assets/scenario-desk.js?v=1" defer></script>
+<script>
+  const y = document.querySelector('[data-year]');
+  if (y) y.textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

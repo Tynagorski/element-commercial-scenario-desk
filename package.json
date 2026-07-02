@@ -1,0 +1,8 @@
+{
+  "name": "element-commercial-scenario-desk",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.54.0"
+  }
+}
